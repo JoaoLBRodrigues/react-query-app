@@ -1,21 +1,20 @@
 import useTodos from "../hooks/useTodos";
 
 const TodoList = () => {
-	const { error, isLoading, data: todo } = useTodos();
+	const { data: todos, error, isLoading } = useTodos();
+
+	if (isLoading) return <p>Loading...</p>;
 
 	if (error) return <p>{error.message}</p>;
 
-	if (isLoading) return <p>loading...</p>;
-
 	return (
 		<ul className="list-group">
-			{todo?.map((todo) => (
+			{todos?.map((todo) => (
 				<li key={todo.id} className="list-group-item">
-					<a>{todo.title}</a>
+					{todo.title}
 				</li>
 			))}
 		</ul>
 	);
 };
-
 export default TodoList;
