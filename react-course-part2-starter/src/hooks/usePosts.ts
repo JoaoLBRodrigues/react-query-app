@@ -8,19 +8,26 @@ export interface Post {
 	body: string;
 	userId: number;
 }
+interface queryProps {
+	page: number;
+	pageSize: number;
+}
 
-const fetchPosts = async (): Promise<Post[]> => {
-	const response = await axios.get(
-		"https://jsonplaceholder.typicode.com/posts"
-	);
-	return response.data;
-};
-
-const usePosts = () => {
+const usePosts = (query: queryProps) => {
 	return useQuery<Post[], Error>({
-		queryKey: ["posts"],
-		queryFn: fetchPosts,
-		staleTime: 1 * 60 * 1000, // 1 minute
+		// follow url flow, like: /users/1/posts
+		queryKey: ["posts", query],
+		queryFn: () =>
+			axios
+				.get("https://jsonplaceholder.typicode.com/posts", {
+					params: {
+						_start: (query.page - 1) * query.pageSize,
+						_limit: query.pageSize,
+					},
+				})
+				.then((res) => res.data),
+		staleTime: 1 * 60 * 1000, // 1 minute~
+		keepPreviousData: true,
 	});
 };
 
